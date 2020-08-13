@@ -8,9 +8,14 @@ var main = function () {
     */
 
     var insertCountsIntoDOM = function (counts) {
-        var $block=$("<p>");
-        $block.val("");
-        $block.text("cool: "+counts.cool);
+        var $block=$("<ul>");
+        for (var word in counts) {
+            if (counts.hasOwnProperty(word)) {
+                var $item = $("<li>");
+                $item.text(word+": "+counts[word]);
+                $block.append($item);
+            }
+        }
         $(".content").append($block);
     };
 

@@ -1,30 +1,34 @@
 var ntwitter = require("ntwitter"),
     credentials = require("../credentials.json"),
     twitter,
+    trackedWords = ["awesome","cool","rad","gnarly","groovy"],
     counts = {};
 
 twitter = ntwitter(credentials);
-
-counts.cool=0;
+trackedWords.forEach(function (word) { counts[word]=0; });
 
 twitter.stream(
     "statuses/filter",
 
-    { "track": ["awesome", "cool", "rad", "gnarly", "groovy"] },
+    { "track": trackedWords },
 
     function(stream) {
         stream.on("data", function(tweet) {
 //          console.log(tweet.text);
-            if (tweet.text.indexOf("cool")>-1) {
-                counts.cool=counts.cool+1;
-//              console.log(counts.cool);
-            }
+            trackedWords.forEach(function (word) {
+                console.log(word+": "+tweet.text+"\n");
+                if (tweet.text.indexOf(word)>-1) {
+                    counts[word]=counts[word]+1;
+                    console.log(word+" updated: now="+counts[word]+"\n");
+                }
+            });
         });
     }
 );
 
+/*
 setInterval(function () {
     console.log("cool: "+counts.cool);
-},3000);
+},3000);*/
 
 module.exports=counts;
