@@ -26,3 +26,5 @@ twitter.stream(
 setInterval(function () {
     console.log("cool: "+counts.cool);
 },3000);
+
+module.exports=counts;
