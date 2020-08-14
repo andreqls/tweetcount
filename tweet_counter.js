@@ -6,9 +6,20 @@ var ntwitter = require("ntwitter"),
     counts = {};
 
 twitter = ntwitter(credentials);
-trackedWords.forEach(function (word) { counts[word]=0; });
+
+// trackedWords.forEach(function (word) { counts[word]=0; });
 
 redisClient = redis.createClient();
+
+trackedWords.forEach(function (word) {
+    redisClient.get(word, function (err, wordCount) {
+        if (err!=null) {
+            console.log("ERROR: "+err);
+            return;
+        }
+        counts[word]=parseInt(wordCount, 10) || 0; // false/NaN/undefined -> 0
+    });
+});
 
 twitter.stream(
     "statuses/filter",
