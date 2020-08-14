@@ -1,4 +1,5 @@
 var ntwitter = require("ntwitter"),
+    redis = require("redis"),
     credentials = require("../credentials.json"),
     twitter,
     trackedWords = ["awesome","cool","rad","gnarly","groovy"],
@@ -7,6 +8,8 @@ var ntwitter = require("ntwitter"),
 twitter = ntwitter(credentials);
 trackedWords.forEach(function (word) { counts[word]=0; });
 
+redisClient = redis.createClient();
+
 twitter.stream(
     "statuses/filter",
 
@@ -14,21 +17,14 @@ twitter.stream(
 
     function(stream) {
         stream.on("data", function(tweet) {
-//          console.log(tweet.text);
             trackedWords.forEach(function (word) {
-                console.log(word+": "+tweet.text+"\n");
                 if (tweet.text.indexOf(word)>-1) {
+                    redisClient.incr(word);
                     counts[word]=counts[word]+1;
-                    console.log(word+" updated: now="+counts[word]+"\n");
                 }
             });
         });
     }
 );
-
-/*
-setInterval(function () {
-    console.log("cool: "+counts.cool);
-},3000);*/
 
 module.exports=counts;
